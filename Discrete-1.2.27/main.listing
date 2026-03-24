@@ -1,0 +1,13 @@
+plt.plot(tp1_x, tp1_y, 'go', label=f'Local Min (0, {tp1_y})')
+plt.plot(tp2_x, tp2_y, 'mo', label=f'Local Max ({tp2_x:.2f}, {tp2_y:.2f})')
+
+# Add labels and title
+plt.title('Plot of $p(x) = x^5 + x^2 + 2$', fontsize=14)
+plt.xlabel('x', fontsize=12)
+plt.ylabel('p(x)', fontsize=12)
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.legend()
+
+plt . tight_layout ()
+plt . show ()
+

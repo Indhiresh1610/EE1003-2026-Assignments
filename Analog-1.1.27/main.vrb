@@ -1,0 +1,19 @@
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+
+
+ax1.set_ylim(-1, 1) # Keep it narrow to show it's flat
+ax1.grid(True, which="both", ls="-", alpha=0.5)
+
+# Phase Plot
+ax2.semilogx(f, phase_deg, color='red', linewidth=2)
+ax2.set_ylabel('Phase (degrees)')
+ax2.set_xlabel('Frequency (Hz)')
+ax2.set_yticks([0, -45, -90, -135, -180])
+ax2.grid(True, which="both", ls="-", alpha=0.5)
+
+plt.tight_layout()
+plt.show()
+\end{mycode}
+

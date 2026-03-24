@@ -1,0 +1,199 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings, skins}
+
+\newtcblisting{mycode}{
+  arc=0mm,                          % Sharp corners
+  boxrule=0.5pt,                    % Border thickness
+  colback=white,                    % Background color
+  colframe=black,                   % Border color
+  listing only, 
+  listing options={
+    language=Python,
+    basicstyle=\small\ttfamily,      % Monospace font
+    keywordstyle=\color{blue},       % Color for 'import', etc.
+    commentstyle=\color{blue},       % Color for comments
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true
+  },
+  sharp corners,
+  enhanced,
+}
+
+\title{Probability-3.0.27}
+\author{INDHIRESH S-EE25BTECH11027}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Question}
+The time between successive failures (in hours) of a side discharge loader operating in a mechanised underground coal mine are as follows:
+\begin{center}
+    62, 58, 54, 50, 52, 60, 58, 57, 50, 53
+\end{center}
+If the failure data follow an exponential distribution, then reliability of the equipment for a period of 50 hours is:
+\vspace{30pt}
+\begin{columns}[t]
+    \column{0.2\textwidth}
+    1) 0.25
+    \column{0.2\textwidth}
+    2) 0.40
+    \column{0.2\textwidth}
+    3) 0.60
+    \column{0.2\textwidth}
+    4) 1.00
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{ Parameter Estimation}
+    For an exponential distribution, we first find the Mean Time Between Failures $(\mu)$:
+    \begin{equation*}
+       \mu = \frac{\sum t_i}{n} = \frac{554}{10} = 55.4 \text{ hours}
+    \end{equation*}
+    
+    As the given is a exponential distribution, failure rate ($\lambda$) is the reciprocal of the $\mu$:
+    \begin{equation*}
+        \lambda = \frac{1}{\mu} = \frac{1}{55.4} \approx 0.01805 \text{ failures/hour}
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{ PDF and CDF Definitions}
+    \textbf{Probability Density Function (PDF):}
+    Represents the failure density at time $t$.
+    \begin{equation*}
+        f(t) = \lambda e^{-\lambda t}
+    \end{equation*}
+
+    \textbf{Cumulative Distribution Function (CDF):}
+    Represents the probability that failure occurs \textit{before} time $t$.
+    \begin{equation*}
+        F(t) = P(T \le t) = \int_{0}^{t} \lambda e^{-\lambda x} dx = 1 - e^{-\lambda t}
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{ Reliability Calculation}
+    Reliability $R(t)$ is the probability of survival beyond time $t$. It is the complement of the CDF:
+    \begin{equation*}
+        R(t) = 1 - F(t) = e^{-\lambda t}
+    \end{equation*}
+
+    Substitute $t = 50$ and $\lambda = 0.01805$:
+    \begin{itemize}
+        \item $R(50) = e^{-(0.01805)(50)}$
+        \item $R(50) = e^{-0.9025}$
+        \item $R(50) \approx 0.4055$
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Final Conclusion}
+    \begin{block}{Result}
+        The reliability of the side discharge loader for a 50-hour period is approximately \textbf{0.40}.
+    \end{block}
+    
+    \vspace{0.5cm}
+    \textbf{Correct Option: (b)}
+    \vfill
+    \begin{itemize}
+        \item $P(\text{Failure before 50h}) \approx 60\%$ (CDF)
+        \item $P(\text{Survival past 50h}) \approx 40\%$ (Reliability)
+    \end{itemize}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters from the problem
+data = [62, 58, 54, 50, 52, 60, 58, 57, 50, 53]
+mtbf = np.mean(data)
+lambd = 1 / mtbf
+t_val = 50
+
+# Time range for plotting
+t = np.linspace(0, 200, 1000)
+
+# CDF: F(t) = 1 - exp(-lambda * t)
+cdf = 1 - np.exp(-lambd * t)
+
+
+
+
+\end{mycode}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+# Reliability: R(t) = exp(-lambda * t)
+reliability = np.exp(-lambd * t)
+
+# Calculations at t = 50
+cdf_50 = 1 - np.exp(-lambd * t_val)
+rel_50 = np.exp(-lambd * t_val)
+
+# Create the plot
+plt.figure(figsize=(10, 6))
+plt.plot(t, cdf, color='green', lw=2, label=r'CDF $F(t) = 1 - e^{-\lambda t}$ (Failure Prob.)')
+plt.plot(t, reliability, color='orange', lw=2, label=r'Reliability $R(t) = e^{-\lambda t}$ (Survival Prob.)')
+plt.axvline(t_val, color='red', linestyle='--', alpha=0.7)
+
+\end{mycode}
+
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+plt.scatter([t_val, t_val], [cdf_50, rel_50], color='red', zorder=5)
+
+# Annotate values at t=50
+plt.annotate(f'CDF(50) $\\approx$ {cdf_50:.2f}', xy=(t_val, cdf_50), xytext=(t_val+10, cdf_50+0.05),
+             arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=5))
+plt.annotate(f'R(50) $\\approx$ {rel_50:.2f}', xy=(t_val, rel_50), xytext=(t_val+10, rel_50-0.1),
+             arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=5))
+
+\end{mycode}
+
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+
+
+plt.title('CDF vs. Reliability Function', fontsize=14)
+plt.xlabel('Time (hours)', fontsize=12)
+plt.ylabel('Probability', fontsize=12)
+plt.legend()
+plt.grid(True, linestyle=':', alpha=0.6)
+
+plt . tight_layout ()
+plt . show ()
+
+
+\end{mycode}
+
+\end{frame}
+\begin{frame}{Plot}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{plot.png}
+        \caption{Python plot}
+        \label{fig:placeholder}
+    \end{figure}
+\end{frame}
+\end{document}

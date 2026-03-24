@@ -1,0 +1,17 @@
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+
+
+plt.title('CDF vs. Reliability Function', fontsize=14)
+plt.xlabel('Time (hours)', fontsize=12)
+plt.ylabel('Probability', fontsize=12)
+plt.legend()
+plt.grid(True, linestyle=':', alpha=0.6)
+
+plt . tight_layout ()
+plt . show ()
+
+
+\end{mycode}
+
