@@ -1,0 +1,13 @@
+\frametitle{Python Code for Plot}
+\begin{mycode}
+
+
+plt.ylim(-1000, 2500) # Zoom in to see the behavior clearly
+plt.title(r' Time-Domain Plot of $h(t) = -\delta(t) + \frac{2}{RC}e^{-t/RC}u(t)$')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.legend()
+plt.show()
+\end{mycode}
+

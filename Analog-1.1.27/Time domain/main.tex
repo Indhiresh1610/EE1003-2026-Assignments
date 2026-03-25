@@ -1,0 +1,370 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings, skins}
+
+\newtcblisting{mycode}{
+  arc=0mm,                          % Sharp corners
+  boxrule=0.5pt,                    % Border thickness
+  colback=white,                    % Background color
+  colframe=black,                   % Border color
+  listing only, 
+  listing options={
+    language=Python,
+    basicstyle=\small\ttfamily,      % Monospace font
+    keywordstyle=\color{blue},       % Color for 'import', etc.
+    commentstyle=\color{blue},       % Color for comments
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true
+  },
+  sharp corners,
+  enhanced,
+}
+
+\title{Analog-1.1.27}
+\author{INDHIRESH S-EE25BTECH11027}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Question}
+Consider the op-amp circuit shown.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{ques.jpg}
+    \caption{Op-amp circuit}
+    \label{fig:placeholder}
+\end{figure}
+\begin{enumerate}
+
+\item The transfer function Vo(s)/Vi(s) is:\\
+
+\begin{columns}[t]
+    \column{0.2\textwidth}
+    1) $\frac{1-sRC}{1+sRC}$
+    \column{0.2\textwidth}
+    2) $\frac{1+sRC}{1-sRC}$
+    \column{0.2\textwidth}
+    3) $\frac{1}{1-sRC}$
+    \column{0.2\textwidth}
+    4) $\frac{1}{1+sRC}$
+\end{columns}
+\vspace{20pt}
+\item If Vi = Vi sin($\omega$t) and Vo = Vo sin($\omega$t + $\phi$), the minimum and maximum values of $\phi$ (in radians) are respectively:
+\begin{columns}[t]
+    \column{0.2\textwidth}
+    1)-$\frac{\pi}{2}$ and $\frac{\pi}{2}$
+    \column{0.2\textwidth}
+    2)0 and $\frac{\pi}{2}$
+    \column{0.2\textwidth}
+    3) -$\pi$ and 0
+    \column{0.2\textwidth}
+    4)-$\frac{\pi}{2}$ and 0
+\end{columns}
+\end{enumerate}
+\end{frame}
+\begin{frame}{Equivalent Circuit in s-domain}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{s domain ckt.png}
+    \caption{Caption}
+    \label{fig:placeholder}
+\end{figure}
+    
+\end{frame}
+
+\begin{frame}{ Analysis of the Non-Inverting Terminal}
+    The input $v_i(t)$ is applied to the RC network connected to the non-inverting terminal ($v_+$).
+    \par\vspace{0.3cm}
+    Applying KCL at node $v_+$:
+    $$\frac{v_i(t) - v_+(t)}{R} = C \frac{dv_+(t)}{dt}$$
+    \par\vspace{0.3cm}
+    Rearranging to form a standard RC differential equation:
+    \begin{equation}
+        v_i(t) = RC \frac{dv_+(t)}{dt} + v_+(t) \label{eq:vplus}
+    \end{equation}
+\end{frame}
+
+\begin{frame}{Analysis of the Inverting Terminal}
+    For an ideal op-amp, $v_- = v_+$. Applying KCL at the inverting terminal:
+    $$\frac{v_i(t) - v_+(t)}{R_1} + \frac{v_o(t) - v_+(t)}{R_1} = 0$$
+    \par\vspace{0.3cm}
+    Since the $R_1$ resistors are equal, they cancel out:
+    $$v_i(t) - v_+(t) + v_o(t) - v_+(t) = 0$$
+    \par\vspace{0.3cm}
+    Solving for $v_+(t)$:
+    \begin{equation}
+        v_+(t) = \frac{v_o(t) + v_i(t)}{2} \label{eq:vsub}
+    \end{equation}
+\end{frame}
+\begin{frame}{Combining the Results}
+    Substitute Equation (\ref{eq:vsub}) into Equation (\ref{eq:vplus}):
+    $$v_i(t) = RC \frac{d}{dt} \left[ \frac{v_o(t) + v_i(t)}{2} \right] + \frac{v_o(t) + v_i(t)}{2}$$
+    \par\vspace{0.3cm}
+    Multiply the entire equation by 2 to clear the fraction:
+    $$2v_i(t) = RC \frac{dv_o(t)}{dt} + RC \frac{dv_i(t)}{dt} + v_o(t) + v_i(t)$$
+    \par\vspace{0.3cm}
+    Group the input and output terms:
+    $$RC \frac{dv_o(t)}{dt} + v_o(t) = v_i(t) - RC \frac{dv_i(t)}{dt}$$
+\end{frame}
+
+
+\begin{frame}{Final Differential Equation}
+    The time-domain behavior of the first-order all-pass filter is governed by:
+    \vfill
+    \begin{block}{Final Result}
+        $$RC \frac{dv_o(t)}{dt} + v_o(t) = v_i(t) - RC \frac{dv_i(t)}{dt}$$
+    \end{block}
+   
+\end{frame}
+
+\begin{frame}{Method 2: The Transform Domain Approach}
+    If we already know the Transfer Function $H(s)$, we can derive the differential equation through the Inverse Laplace Transform.
+    \par\vspace{0.3cm}
+    The Transfer Function for this all-pass filter is:
+    $$H(s) = \frac{V_o(s)}{V_i(s)} = \frac{1 - sRC}{1 + sRC}$$
+    \par\vspace{0.3cm}
+    Cross-multiplying the terms gives:
+    $$V_o(s)(1 + sRC) = V_i(s)(1 - sRC)$$
+    \par\vspace{0.3cm}
+    Expanding both sides:
+    $$V_o(s) + sRC V_o(s) = V_i(s) - sRC V_i(s)$$
+\end{frame}
+
+% Slide: Inverse Laplace Transformation
+\begin{frame}{ Applying Inverse Laplace Transform}
+    Using the Laplace Transform property for differentiation:
+    $$\mathcal{L} \left\{ \frac{dx(t)}{dt} \right\} = sX(s) - x(0^-)$$
+    \par\vspace{0.3cm}
+    Assuming zero initial conditions ($v_o(0) = 0$ and $v_i(0) = 0$), we apply the Inverse Transform $\mathcal{L}^{-1}$ to each term:
+    $$\mathcal{L}^{-1} \{V_o(s)\} + RC \mathcal{L}^{-1} \{sV_o(s)\} = \mathcal{L}^{-1} \{V_i(s)\} - RC \mathcal{L}^{-1} \{sV_i(s)\}$$
+    \par\vspace{0.3cm}
+    This directly yields the time-domain differential equation:
+    \begin{block}{Differential Equation Representation}
+        $$v_o(t) + RC \frac{dv_o(t)}{dt} = v_i(t) - RC \frac{dv_i(t)}{dt}$$
+    \end{block}
+\end{frame}
+\begin{frame}{Finding h(t)-Method 1:The System Model}
+    The first-order all-pass filter is governed by the differential equation:
+    \begin{equation*}
+        RC \frac{dv_o(t)}{dt} + v_o(t) = v_i(t) - RC \frac{dv_i(t)}{dt}
+    \end{equation*}
+    \vfill
+    To find the \textbf{Impulse Response} $h(t)$, we set the input $v_i(t) = \delta(t)$:
+    \begin{equation}
+        RC \frac{dh(t)}{dt} + h(t) = \delta(t) - RC \delta'(t) \label{eq:impulse_de}
+    \end{equation}
+    where $\delta'(t)$ is the unit doublet (derivative of the delta function).
+\end{frame}
+
+
+\begin{frame}{ Integrating Factor Approach}
+    Divide Eq. (\ref{eq:impulse_de}) by $RC$ to get standard form:
+    $$\frac{dh(t)}{dt} + \frac{1}{RC}h(t) = \frac{1}{RC}\delta(t) - \delta'(t)$$
+    \par\vspace{0.3cm}
+    Multiply by the integrating factor $\mu(t) = e^{t/RC}$:
+    $$\frac{d}{dt} \left[ e^{t/RC} h(t) \right] = e^{t/RC} \left( \frac{1}{RC}\delta(t) - \delta'(t) \right)$$
+    \par\vspace{0.3cm}
+    Integrating from $0^-$ to $t$:
+    $$e^{t/RC} h(t) = \int_{0^-}^t \frac{1}{RC}e^{\tau/RC}\delta(\tau)d\tau - \int_{0^-}^t e^{\tau/RC}\delta'(\tau)d\tau$$
+\end{frame}
+
+% Slide 4: Handling Singularities
+\begin{frame}{ Evaluating the Integrals}
+    \textbf{1. First Integral (Sifting Property):}
+    $$\int_{0^-}^t \frac{1}{RC}e^{\tau/RC}\delta(\tau)d\tau = \frac{1}{RC} e^0 u(t) = \frac{1}{RC}u(t)$$
+    \par\vspace{0.3cm}
+    \textbf{2. Second Integral (Doublet Property):}
+    Using $\int f(t)\delta'(t)dt = f(t)\delta(t) - \int f'(t)\delta(t)dt$:
+    $$\int_{0^-}^t e^{\tau/RC}\delta'(\tau)d\tau = [e^0 \delta(t)] - \int \frac{1}{RC} e^{\tau/RC}\delta(\tau)d\tau = \delta(t) - \frac{1}{RC}u(t)$$
+    \par\vspace{0.3cm}
+    \textbf{Combining:}
+    $$e^{t/RC} h(t) = \frac{1}{RC}u(t) - \left( \delta(t) - \frac{1}{RC}u(t) \right) = \frac{2}{RC}u(t) - \delta(t)$$
+\end{frame}
+
+% Slide 5: Final Result (Method 1)
+\begin{frame}{ Final Expression}
+    Multiplying through by $e^{-t/RC}$:
+    \begin{block}{Impulse Response $h(t)$}
+        $$h(t) = -\delta(t) + \frac{2}{RC} e^{-\frac{t}{RC}} u(t)$$
+    \end{block}
+\end{frame}
+
+
+
+\begin{frame}{Method 2: Inverse Laplace Transform}
+We know that the transfer function is
+$$H(s) = \frac{1-sRC }{1+sRC}$$
+    We manipulate $H(s)$ to fit standard Laplace Table forms:
+    $$H(s) = \frac{-(sRC + 1) + 2}{sRC + 1} = -1 + \frac{2}{sRC + 1}$$
+    \par\vspace{0.3cm}
+    Factor out $RC$ from the denominator:
+    $$H(s) = -1 + \left( \frac{2}{RC} \right) \frac{1}{s + \frac{1}{RC}}$$
+    \par\vspace{0.3cm}
+    Apply $\mathcal{L}^{-1}$:
+    $$h(t) = \mathcal{L}^{-1} \{-1\} + \frac{2}{RC} \mathcal{L}^{-1} \left\{ \frac{1}{s + \frac{1}{RC}} \right\}$$
+\end{frame}
+
+\begin{frame}{ Final Verification}
+    Using the standard transform pairs:
+    \begin{itemize}
+        \item $\mathcal{L}^{-1}\{1\} = \delta(t)$
+        \item $\mathcal{L}^{-1}\{\frac{1}{s+a}\} = e^{-at}u(t)$
+    \end{itemize}
+    \par\vspace{0.4cm}
+    \begin{block}{Result Consistency}
+        $$h(t) = -\delta(t) + \frac{2}{RC} e^{-\frac{t}{RC}} u(t)$$
+    \end{block}
+    \vfill
+    Both methods yield the same expression, confirming the mathematical model of the all-pass filter.
+\end{frame}
+\begin{frame}{Max and min phase-The Starting Point}
+    The time-domain relationship for the all-pass filter is:
+    \begin{equation}
+        RC \frac{dv_o(t)}{dt} + v_o(t) = v_i(t) - RC \frac{dv_i(t)}{dt} \label{eq:de}
+    \end{equation}
+    \vfill
+    For a sinusoidal input $v_i(t) = V_i \sin(\omega t)$, we seek the steady-state output:
+    $$v_o(t) = V_o \sin(\omega t + \phi)$$
+    \vfill
+    To solve for the phase shift $\phi$, we assume a solution of the form:
+    \begin{block}{Assumed Form}
+        $$v_o(t) = A \sin(\omega t) + B \cos(\omega t)$$
+    \end{block}
+\end{frame}
+
+% Slide 3: Substitution
+\begin{frame}{Substitution into the Differential Equation}
+    Differentiating our assumed solution:
+    $$\frac{dv_o(t)}{dt} = \omega A \cos(\omega t) - \omega B \sin(\omega t)$$
+    \par\vspace{0.3cm}
+    Substitute $v_o, \dot{v}_o, v_i$, and $\dot{v}_i$ into Eq. (\ref{eq:de}):
+    \begin{multline*}
+        RC(\omega A \cos \omega t - \omega B \sin \omega t) + (A \sin \omega t + B \cos \omega t) \\
+        = V_i \sin \omega t - RC(\omega V_i \cos \omega t)
+    \end{multline*}
+\end{frame}
+
+% Slide 4: Grouping Coefficients
+\begin{frame}{Grouping Sine and Cosine Terms}
+    To satisfy the equation for all $t$, the coefficients of $\sin(\omega t)$ and $\cos(\omega t)$ must match on both sides.
+    \par\vspace{0.4cm}
+    \textbf{1. Sine Coefficients:}
+    $$A - \omega RC B = V_i$$
+    \par\vspace{0.3cm}
+    \textbf{2. Cosine Coefficients:}
+    $$B + \omega RC A = -\omega RC V_i$$
+    \par\vspace{0.4cm}
+    Solving this system for $A$ and $B$:
+    $$A = V_i \frac{1 - (\omega RC)^2}{1 + (\omega RC)^2}, \quad B = V_i \frac{-2\omega RC}{1 + (\omega RC)^2}$$
+\end{frame}
+
+% Slide 5: Deriving the Phase Shift
+\begin{frame}{Extracting the Phase $\phi$}
+    A signal of the form $v_o(t) = A \sin(\omega t) + B \cos(\omega t)$ has a phase shift:
+    $$\phi = \tan^{-1} \left( \frac{B}{A} \right)$$
+    \par\vspace{0.3cm}
+    Substituting our results for $A$ and $B$:
+    $$\phi = \tan^{-1} \left( \frac{-2\omega RC}{1 - (\omega RC)^2} \right)$$
+    \par\vspace{0.3cm}
+    Using the identity $\tan(2\theta) = \frac{2\tan\theta}{1 - \tan^2\theta}$, where $\tan\theta = \omega RC$:
+    \begin{block}{Phase Expression}
+        $$\phi(\omega) = -2 \tan^{-1}(\omega RC)$$
+    \end{block}
+\end{frame}
+
+% Slide 6: Range of Phase (Conclusion)
+\begin{frame}{Final Answer: Phase Limits}
+    We analyze the behavior of $\phi(\omega)$ across the frequency spectrum:
+    \vfill
+    \begin{itemize}
+        \item \textbf{At DC ($\omega \to 0$):}
+        $$\phi \to -2 \tan^{-1}(0) = \mathbf{0 \text{ rad}}$$
+        \item \textbf{At Infinite Frequency ($\omega \to \infty$):}
+        $$\phi \to -2 \tan^{-1}(\infty) = -2 \left( \frac{\pi}{2} \right) = \mathbf{-\pi \text{ rad}}$$
+    \end{itemize}
+    \vfill
+    \begin{alertblock}{Solution}
+        The phase ranges from \textbf{$-\pi$ to $0$}. This matches \textbf{Option (iii)}.
+    \end{alertblock}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+
+\begin{mycode}
+import numpy as np
+import matplotlib.pyplot as plt
+
+R = 1000 
+C = 1e-6
+RC = R * C
+
+# 1. Create the time vector
+t = np.linspace(-0.001, 0.005, 1000)
+dt = t[1] - t[0] # Time step size
+
+# 2. Define the Step Function u(t)
+u = np.where(t >= 0, 1, 0)
+
+
+\end{mycode}
+
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+\begin{mycode}
+
+# 4. Define the Delta Function numerically
+delta = np.zeros_like(t)
+delta[np.abs(t).argmin()] = 1/dt 
+
+# 5. Combine into the final h(t)
+h_final = -delta + h_continuous
+
+# Plotting
+plt.figure(figsize=(9, 6))
+plt.plot(t, h_final, label=' $h(t)$ Calculation', color='blue', lw=2)
+
+# Aesthetics
+plt.axhline(0, color='black', lw=1)
+plt.axvline(0, color='black', lw=1)
+
+\end{mycode}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Python Code for Plot}
+\begin{mycode}
+
+
+plt.ylim(-1000, 2500) # Zoom in to see the behavior clearly
+plt.title(r' Time-Domain Plot of $h(t) = -\delta(t) + \frac{2}{RC}e^{-t/RC}u(t)$')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.legend()
+plt.show()
+\end{mycode}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Python plot}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{plot2.png}
+        \caption{Plot}
+        \label{fig:placeholder}
+    \end{figure}
+\end{frame}
+\end{document}
