@@ -313,6 +313,10 @@ dt = t[1] - t[0] # Time step size
 # 2. Define the Step Function u(t)
 u = np.where(t >= 0, 1, 0)
 
+# 3. Define the Continuous Exponential Part
+
+h_continuous = (2/RC) * np.exp(-t/RC) * u
+
 
 \end{mycode}
 
