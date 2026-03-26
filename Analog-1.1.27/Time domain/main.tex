@@ -225,78 +225,187 @@ $$H(s) = \frac{1-sRC }{1+sRC}$$
     \vfill
     Both methods yield the same expression, confirming the mathematical model of the all-pass filter.
 \end{frame}
-\begin{frame}{Max and min phase-The Starting Point}
-    The time-domain relationship for the all-pass filter is:
-    \begin{equation}
-        RC \frac{dv_o(t)}{dt} + v_o(t) = v_i(t) - RC \frac{dv_i(t)}{dt} \label{eq:de}
-    \end{equation}
-    \vfill
-    For a sinusoidal input $v_i(t) = V_i \sin(\omega t)$, we seek the steady-state output:
-    $$v_o(t) = V_o \sin(\omega t + \phi)$$
-    \vfill
-    To solve for the phase shift $\phi$, we assume a solution of the form:
-    \begin{block}{Assumed Form}
-        $$v_o(t) = A \sin(\omega t) + B \cos(\omega t)$$
+
+
+\begin{frame}{Min and max phase-Formulating the State Equation}
+    To apply RK4, we must rewrite our differential equation in the form $\frac{dv_o}{dt} = f(t, v_o)$.
+    \par\vspace{0.3cm}
+    Starting from:
+    $$v_o(t) + RC \frac{dv_o(t)}{dt} = v_i(t) - RC \frac{dv_i(t)}{dt}$$
+Substitute $V_i$=$V_i\sin(\omega t)$
+    $$RC \frac{dv_o(t)}{dt} + v_o(t) = V_i \sin(\omega t) - \omega RC V_i \cos(\omega t)$$
+    \par\vspace{0.3cm}
+    Rearranging to isolate the derivative:
+    \begin{block}{The Slope Function $f(t, v_o)$}
+        $$\frac{dv_o}{dt} = \frac{1}{RC} \left[ V_i \sin(\omega t) - \omega RC V_i \cos(\omega t) - v_o(t) \right]$$
     \end{block}
 \end{frame}
 
-% Slide 3: Substitution
-\begin{frame}{Substitution into the Differential Equation}
-    Differentiating our assumed solution:
-    $$\frac{dv_o(t)}{dt} = \omega A \cos(\omega t) - \omega B \sin(\omega t)$$
-    \par\vspace{0.3cm}
-    Substitute $v_o, \dot{v}_o, v_i$, and $\dot{v}_i$ into Eq. (\ref{eq:de}):
-    \begin{multline*}
-        RC(\omega A \cos \omega t - \omega B \sin \omega t) + (A \sin \omega t + B \cos \omega t) \\
-        = V_i \sin \omega t - RC(\omega V_i \cos \omega t)
-    \end{multline*}
-\end{frame}
-
-% Slide 4: Grouping Coefficients
-\begin{frame}{Grouping Sine and Cosine Terms}
-    To satisfy the equation for all $t$, the coefficients of $\sin(\omega t)$ and $\cos(\omega t)$ must match on both sides.
+% Slide 3: The RK4 Algorithm
+\begin{frame}{ The RK4 Iterative Process}
+    For a small time-step $h$, the output $v_{n+1}$ is calculated using four "trial" slopes:
+    \par\vspace{0.2cm}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item $k_1 = f(t_n, v_n)$
+                \item $k_2 = f(t_n + \frac{h}{2}, v_n + \frac{h}{2}k_1)$
+                \item $k_3 = f(t_n + \frac{h}{2}, v_n + \frac{h}{2}k_2)$
+                \item $k_4 = f(t_n + h, v_n + hk_3)$
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{The Weighted Average:}
+            $$v_{n+1} = v_n + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)$$
+        \end{column}
+    \end{columns}
     \par\vspace{0.4cm}
-    \textbf{1. Sine Coefficients:}
-    $$A - \omega RC B = V_i$$
-    \par\vspace{0.3cm}
-    \textbf{2. Cosine Coefficients:}
-    $$B + \omega RC A = -\omega RC V_i$$
+    This sequence "marches" the output voltage forward in time with high stability.
+\end{frame}
+
+
+% Slide 5: Numerical Verification of Part (b)
+\begin{frame}{Numerical Proof for Option (iii)}
+    By running the RK4 simulation at extreme frequencies, we confirm:
     \par\vspace{0.4cm}
-    Solving this system for $A$ and $B$:
-    $$A = V_i \frac{1 - (\omega RC)^2}{1 + (\omega RC)^2}, \quad B = V_i \frac{-2\omega RC}{1 + (\omega RC)^2}$$
-\end{frame}
-
-% Slide 5: Deriving the Phase Shift
-\begin{frame}{Extracting the Phase $\phi$}
-    A signal of the form $v_o(t) = A \sin(\omega t) + B \cos(\omega t)$ has a phase shift:
-    $$\phi = \tan^{-1} \left( \frac{B}{A} \right)$$
-    \par\vspace{0.3cm}
-    Substituting our results for $A$ and $B$:
-    $$\phi = \tan^{-1} \left( \frac{-2\omega RC}{1 - (\omega RC)^2} \right)$$
-    \par\vspace{0.3cm}
-    Using the identity $\tan(2\theta) = \frac{2\tan\theta}{1 - \tan^2\theta}$, where $\tan\theta = \omega RC$:
-    \begin{block}{Phase Expression}
-        $$\phi(\omega) = -2 \tan^{-1}(\omega RC)$$
-    \end{block}
-\end{frame}
-
-% Slide 6: Range of Phase (Conclusion)
-\begin{frame}{Final Answer: Phase Limits}
-    We analyze the behavior of $\phi(\omega)$ across the frequency spectrum:
-    \vfill
     \begin{itemize}
-        \item \textbf{At DC ($\omega \to 0$):}
-        $$\phi \to -2 \tan^{-1}(0) = \mathbf{0 \text{ rad}}$$
-        \item \textbf{At Infinite Frequency ($\omega \to \infty$):}
-        $$\phi \to -2 \tan^{-1}(\infty) = -2 \left( \frac{\pi}{2} \right) = \mathbf{-\pi \text{ rad}}$$
+        \item \textbf{At 1 Hz:} The output $v_o(t)$ and input $v_i(t)$ are nearly identical (Phase $\approx 0$).
+        \item \textbf{At 10 kHz:} The output is inverted relative to the input (Phase $\approx -\pi$).
     \end{itemize}
-    \vfill
-    \begin{alertblock}{Solution}
-        The phase ranges from \textbf{$-\pi$ to $0$}. This matches \textbf{Option (iii)}.
-    \end{alertblock}
+    \par\vspace{0.4cm}
+    \begin{block}{Final Verification}
+        The numerical "Time-Delay" method confirms that the phase $\phi$ is bounded between $-\pi$ and $0$.
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Python code for plot-RK4}    
+\begin{mycode}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters
+R, C = 1000, 1e-6
+RC = R * C
+Vi = 5
+
+def f(t, vo, omega):
+    return (Vi * (np.sin(omega * t) - omega * RC * np.cos(omega * t)) - vo) / RC
+
+def run_rk4(freq, duration, h):
+    t = np.arange(0, duration, h)
+    omega = 2 * np.pi * freq
+    vo = np.zeros(len(t))
+   
+\end{mycode}
 \end{frame}
 \begin{frame}[fragile]
+\frametitle{Python code for plot-RK4}    
+\begin{mycode}
+
+    for i in range(len(t) - 1):
+        k1 = f(t[i], vo[i], omega)
+        k2 = f(t[i] + h/2, vo[i] + h/2 * k1, omega)
+        k3 = f(t[i] + h/2, vo[i] + h/2 * k2, omega)
+        k4 = f(t[i] + h, vo[i] + h * k3, omega)
+        vo[i+1] = vo[i] + (h/6) * (k1 + 2*k2 + 2*k3 + k4)
+    return t, Vi * np.sin(omega * t), vo
+
+def calculate_phase_fft(vi, vo):
+    """Calculates phase difference using FFT at the dominant frequency."""
+
+\end{mycode}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python code for plot-RK4}    
+\begin{mycode}
+ # Perform FFT
+    Vi_fft = np.fft.fft(vi)
+    Vo_fft = np.fft.fft(vo)
+    
+    # Find the peak frequency index (the fundamental frequency)
+    idx = np.argmax(np.abs(Vi_fft))
+    
+    # Get the phase angles in radians
+    phase_vi = np.angle(Vi_fft[idx])
+    phase_vo = np.angle(Vo_fft[idx])
+    
+    # Phase difference (Output - Input)
+    diff = phase_vo - phase_vi
+    diff = (diff + np.pi) % (2 * np.pi) - np.pi
+    
+   
+\end{mycode}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Python code for plot-RK4}    
+\begin{mycode}
+    if diff > 0: diff -= 2*np.pi
+        
+    return diff, np.degrees(diff)
+
+# 1. Low Frequency (1 Hz)
+t_low, vi_low, vo_low = run_rk4(1, 5.0, 1e-3) 
+phi_rad_low, phi_deg_low = calculate_phase_fft(vi_low, vo_low)
+
+# 2. High Frequency (10 kHz)
+t_high, vi_high, vo_high = run_rk4(10000, 0.002, 1e-7) 
+phi_rad_high, phi_deg_high = calculate_phase_fft(vi_high, vo_high)
+
+
+\end{mycode}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Python code for plot-RK4}    
+\begin{mycode}
+# Plotting
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+
+# Subplot 1: Low Frequency
+ax1.plot(t_low, vi_low, 'r--', label='Input $v_i(t)$')
+ax1.plot(t_low, vo_low, 'b', label='Output $v_o(t)$')
+ax1.set_title(f'Low Frequency (1 Hz)\nCalc Phase: {phi_deg_low:.2f}°')
+ax1.set_xlim(4.0, 5.0)
+ax1.set_xlabel('Time (s)')
+ax1.set_ylabel('Voltage (V)')
+ax1.grid(True, linestyle=':')
+ax1.legend()
+
+
+\end{mycode}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Python code for plot-RK4}    
+\begin{mycode}
+# Subplot 2: High Frequency
+ax2.plot(t_high, vi_high, 'r--', label='Input $v_i(t)$')
+ax2.plot(t_high, vo_high, 'b', label='Output $v_o(t)$')
+ax2.set_title(f'High Frequency (10 kHz)\nCalc Phase: {phi_deg_high:.2f}°')
+ax2.set_xlim(0.0018, 0.002) 
+ax2.set_xlabel('Time (s)')
+ax2.set_ylabel('Voltage (V)')
+ax2.grid(True, linestyle=':')
+ax2.legend()
+plt.tight_layout() 
+plt.show()
+print(f"Results:\n1 Hz Phase: {phi_deg_low:.4f} degrees\n10 kHz Phase: {phi_deg_high:.4f} degrees")
+\end{mycode}
+\end{frame}
+\begin{frame}{Plotn showing phase difference }
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{plot3.png}
+    \caption{Plot}
+    \label{fig:placeholder}
+\end{figure}
+    
+\end{frame}
+
+\begin{frame}[fragile]
 \frametitle{Python Code for Plot}
+
 
 \begin{mycode}
 import numpy as np

@@ -1,0 +1,14 @@
+\frametitle{Python Code for Plot}
+\begin{mycode}
+
+# Styling
+plt.title('Plot', fontsize=14)
+plt.xlabel('x', fontsize=12)
+plt.ylabel('f(x)', fontsize=12)
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.legend()
+
+plt.show()
+
+\end{mycode}
+
